@@ -4,7 +4,7 @@ import pickle
 import sys
 sys.path.insert(0,"./utils/")
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, Security
 from models.token import Token, TokenData
 from models.user import User
 from utils.auth_utils import oauth2_scheme, OAuth2PasswordRequestForm,create_access_token
@@ -39,17 +39,15 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 
 
 @app.get("/users/me/items/")
-async def read_own_items(current_user: User = Depends(get_current_active_user)):
+async def read_own_items(current_user: User = Security(get_current_active_user, scopes=["items"])):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
 
 
 @app.get("/{input}")
-def predict(input: str, current_user: User = Depends(get_current_active_user)):
-    if login_for_access_token() :
-        tfidf, model = pickle.load(open('model.bin', 'rb'))
-        predictions = model.predict(tfidf.transform([input]))
-        label = predictions[0]
-        return {'text': input, 'label': label}
-    else:
-        return {'text': "user non active by m", 'label': 'no'}
+def predict(input: str, current_user: User = Security(get_current_active_user, scopes=["me"])):
+    tfidf, model = pickle.load(open('model.bin', 'rb'))
+    predictions = model.predict(tfidf.transform([input]))
+    label = predictions[0]
+    return {'text': input, 'label': label}
+
