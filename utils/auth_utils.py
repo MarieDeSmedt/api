@@ -11,8 +11,7 @@ from fastapi.security import (
 
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="token", 
-    scopes={"me": "Read information about the current user.", "items": "Read items."}
+    tokenUrl="token"
 )
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
