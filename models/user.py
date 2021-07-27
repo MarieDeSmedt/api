@@ -15,13 +15,7 @@ class User(BaseModel):
     disabled: Optional[bool] = None
     status: str = "user"
 
-    @property
-    def scopes(self,status):
-        if self.status == "user":
-            self.scopes = USER_SCOP
-        else:
-            self.scopes = ADMIN_SCOP
-
+ 
 
     
 
